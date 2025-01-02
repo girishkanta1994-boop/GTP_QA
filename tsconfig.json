@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",           // Required for Node.js modules
+      "resolveJsonModule": true,      // Allow importing JSON files
+      "esModuleInterop": true,        // Enable compatibility with ES modules
+      "target": "es6",                // Set ECMAScript target version
+      "strict": true                  // Enable strict type checking
+    },
+    "include": ["tests/**/*.ts"],     // Include all test files
+    "exclude": ["node_modules"]       // Exclude node_modules folder
+  }
+  
