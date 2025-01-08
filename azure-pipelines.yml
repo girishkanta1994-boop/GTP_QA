@@ -13,7 +13,15 @@ steps:
   displayName: 'npm ci'
 - script: npx playwright install --with-deps
   displayName: 'Install Playwright browsers'
-- script: npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts
+- script: npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts  --reporter=list,junit
   displayName: 'Run Playwright tests'
+- task: PublishTestResults@2
+  condition: always()
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'playwright-results.xml'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    testRunTitle: 'Playwright Tests'
   env:
     CI: 'true'
