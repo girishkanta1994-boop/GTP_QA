@@ -13,21 +13,21 @@ steps:
   displayName: 'npm ci'
 - script: npx playwright install --with-deps
   displayName: 'Install Playwright browsers'
-- script: npx playwright test
+- script: npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts --project=chromium
   displayName: 'Run Playwright tests'
   env:
     CI: 'true'
 
-# - task: PublishTestResults@2
-#   displayName: 'Publish test results'
-#   inputs:
-#     searchFolder: 'test-results'
-#     testResultsFormat: 'JUnit'
-#     testResultsFiles: 'e2e-junit-results.xml'
-#     mergeTestResults: true
-#     failTaskOnFailedTests: true
-#     testRunTitle: 'My End-To-End Tests'
-#   condition: succeededOrFailed()
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    searchFolder: 'results'
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'junit-results.xml'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
+    testRunTitle: 'My End-To-End Tests'
+  condition: succeededOrFailed()
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: 'playwright-report'
