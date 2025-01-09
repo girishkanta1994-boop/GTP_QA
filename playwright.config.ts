@@ -169,6 +169,7 @@ reporter: 'html',
   ],
  reporter: [
    ['list'], // Optional: Console output
+   ['html'],
    ['junit', { outputFile: 'results/junit-results.xml' }]
 ],
 
