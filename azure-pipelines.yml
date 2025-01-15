@@ -25,7 +25,7 @@ steps:
     testResultsFormat: 'JUnit'
     searchFolder: 'results'
     testResultsTitle: 'Playwright Test Results'
-    mergeTestResults: true
+    mergeTestResults: false
     failTaskOnFailedTests: false
     testRunTitle: 'Playwright E2E Tests'
     publishRunAttachments: true
