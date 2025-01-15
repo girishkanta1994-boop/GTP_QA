@@ -18,6 +18,12 @@ steps:
   env:
     CI: 'true'
 
+- script: |
+    echo "=== Directory Listing of Working Directory ==="
+    dir /s /b $(System.DefaultWorkingDirectory)
+  displayName: 'List All Files'
+  condition: always()
+
 - task: PublishTestResults@2
   displayName: 'Publish Playwright Test Results'
   inputs:
