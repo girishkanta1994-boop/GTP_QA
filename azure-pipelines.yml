@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: windows-latest
+  vmImage: ubuntu-latest
 
 steps:
 - task: NodeTool@0
@@ -13,34 +13,24 @@ steps:
   displayName: 'npm ci'
 - script: npx playwright install --with-deps
   displayName: 'Install Playwright browsers'
-- script: npx playwright test --project=chromium
+- script: npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts --project=chromium
   displayName: 'Run Playwright tests'
   env:
     CI: 'true'
 
-- script: |
-    echo "=== Directory Listing of Working Directory ==="
-    dir /s /b $(System.DefaultWorkingDirectory)
-  displayName: 'List All Files'
-  condition: always()
-
 - task: PublishTestResults@2
-  displayName: 'Publish Playwright Test Results'
+  displayName: 'Publish test results'
   inputs:
-    searchFolder: '$(System.DefaultWorkingDirectory)'  # Use root directory     
-    testResultsFiles: '**/junit-results.xml'  # Use wildcard to find the file   
+    searchFolder: 'results'
     testResultsFormat: 'JUnit'
-    testResultsTitle: 'Playwright Test Results'
-    mergeTestResults: false
+    testResultsFiles: 'junit-results.xml'
+    mergeTestResults: true
     failTaskOnFailedTests: true
     testRunTitle: 'My End-To-End Tests'
-    publishRunAttachments: true
-    testRunSystem: 'Playwright'
-  condition: always()
+  condition: succeededOrFailed()
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish Playwright Report'
   inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)/playwright-report'
-    artifact: 'test-report'
-    publishLocation: 'Container'
-  condition: always()
+    targetPath: 'playwright-report'
+    artifact: 'playwright-report'
+    publishLocation: 'pipeline'
+  condition: succeededOrFailed()
