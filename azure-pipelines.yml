@@ -21,7 +21,7 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish Playwright Test Results'
   inputs:
-    testResultsFiles: '**/junit-results.xml'
+    testResultsFiles: 'junit-results.xml'
     testResultsFormat: 'JUnit'
     searchFolder: 'results'
     testResultsTitle: 'Playwright Test Results'
