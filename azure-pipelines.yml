@@ -35,6 +35,6 @@ steps:
   displayName: 'Publish Playwright Report'
   inputs:
     targetPath: '$(System.DefaultWorkingDirectory)/playwright-report'
-    artifact: 'playwright-report'
+    artifact: 'test-report'
     publishLocation: 'pipeline'
   condition: always()
