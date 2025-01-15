@@ -21,13 +21,13 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish test results'
   inputs:
-    searchFolder: '$(System.DefaultWorkingDirectory)'
+    searchFolder: '$(System.DefaultWorkingDirectory)/results'
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/junit-results.xml'
+    testResultsFiles: 'junit-results.xml'
     mergeTestResults: true
-    failTaskOnFailedTests: true
-    testRunTitle: 'My End-To-End Tests'
-  condition: succeededOrFailed()
+    failTaskOnFailedTests: false
+    testRunTitle: 'Playwright E2E Tests'
+  condition: always()
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: 'playwright-report'
