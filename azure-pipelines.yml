@@ -23,7 +23,7 @@ steps:
   inputs:
     testResultsFiles: '**/junit-results.xml'
     testResultsFormat: 'JUnit'
-    searchFolder: '$(System.DefaultWorkingDirectory)'
+    searchFolder: 'results'
     mergeTestResults: true
     failTaskOnFailedTests: false
     testRunTitle: 'Playwright E2E Tests'
