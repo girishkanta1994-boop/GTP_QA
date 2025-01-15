@@ -13,7 +13,7 @@ steps:
   displayName: 'npm ci'
 - script: npx playwright install --with-deps
   displayName: 'Install Playwright browsers'
-- script: npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts --project=chromium
+- script: npx playwright test --project=chromium
   displayName: 'Run Playwright tests'
   env:
     CI: 'true'
@@ -21,9 +21,9 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish test results'
   inputs:
-    searchFolder: 'results'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
     testResultsFormat: 'JUnit'
-    testResultsFiles: 'junit-results.xml'
+    testResultsFiles: '**/junit-results.xml'
     mergeTestResults: true
     failTaskOnFailedTests: true
     testRunTitle: 'My End-To-End Tests'
