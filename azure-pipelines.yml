@@ -24,6 +24,7 @@ steps:
     testResultsFiles: '**/junit-results.xml'
     testResultsFormat: 'JUnit'
     searchFolder: 'results'
+    testResultsTitle: 'Playwright Test Results'
     mergeTestResults: true
     failTaskOnFailedTests: false
     testRunTitle: 'Playwright E2E Tests'
