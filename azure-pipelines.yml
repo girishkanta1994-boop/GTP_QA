@@ -21,8 +21,8 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish Playwright Test Results'
   inputs:
-    searchFolder: 'results'
-    testResultsFiles: 'junit-results.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)'  # Use root directory     
+    testResultsFiles: '**/junit-results.xml'  # Use wildcard to find the file   
     testResultsFormat: 'JUnit'
     testResultsTitle: 'Playwright Test Results'
     mergeTestResults: false
@@ -30,7 +30,7 @@ steps:
     testRunTitle: 'My End-To-End Tests'
     publishRunAttachments: true
     testRunSystem: 'Playwright'
-  condition: succeededOrFailed()
+  condition: always()
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Playwright Report'
   inputs:
