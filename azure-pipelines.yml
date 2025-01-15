@@ -27,7 +27,7 @@ steps:
     testResultsTitle: 'Playwright Test Results'
     mergeTestResults: false
     failTaskOnFailedTests: true
-    testRunTitle: 'Playwright E2E Tests'
+    testRunTitle: 'My End-To-End Tests'
     publishRunAttachments: true
     testRunSystem: 'Playwright'
   condition: always()
