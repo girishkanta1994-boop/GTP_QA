@@ -33,8 +33,9 @@ steps:
     testRunSystem: 'Playwright'
   condition: always()
 - task: PublishPipelineArtifact@1
+  displayName: 'Publish Playwright Report'
   inputs:
     targetPath: 'playwright-report'
     artifact: 'playwright-report'
     publishLocation: 'pipeline'
-  condition: succeededOrFailed()
+  condition: always()
