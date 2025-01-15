@@ -30,7 +30,7 @@ steps:
     testRunTitle: 'My End-To-End Tests'
     publishRunAttachments: true
     testRunSystem: 'Playwright'
-  condition: always()
+  condition: succeededOrFailed()
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Playwright Report'
   inputs:
