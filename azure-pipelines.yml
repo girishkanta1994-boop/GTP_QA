@@ -26,7 +26,7 @@ steps:
     searchFolder: 'results'
     testResultsTitle: 'Playwright Test Results'
     mergeTestResults: false
-    failTaskOnFailedTests: false
+    failTaskOnFailedTests: true
     testRunTitle: 'Playwright E2E Tests'
     publishRunAttachments: true
     testRunSystem: 'Playwright'
