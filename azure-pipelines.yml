@@ -34,7 +34,7 @@ steps:
 - task: PublishPipelineArtifact@1
   displayName: 'Publish Playwright Report'
   inputs:
-    targetPath: 'playwright-report'
+    targetPath: '$(System.DefaultWorkingDirectory)/playwright-report'
     artifact: 'playwright-report'
     publishLocation: 'pipeline'
   condition: always()
