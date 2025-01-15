@@ -21,7 +21,8 @@ steps:
 - task: PublishTestResults@2
   displayName: 'Publish Playwright Test Results'
   inputs:
-    testResultsFiles: 'junit-results.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)'  # Use root directory              
+    testResultsFiles: '**/junit-results.xml'  # Use wildcard to find the file   
     testResultsFormat: 'JUnit'
     searchFolder: 'results'
     testResultsTitle: 'Playwright Test Results'
