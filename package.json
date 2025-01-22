@@ -2,7 +2,9 @@
   "name": "demo-test",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "tests": "playwright test tests/GTP-LoginFlow/gtplogin.spec.ts --project=chromium --config=playwright.config.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
