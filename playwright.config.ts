@@ -175,7 +175,8 @@ reporter: 'html',
   ],
  reporter: [
    ['list'], // Optional: Console output
-   ['junit', { outputFile: 'results/junit-results.xml' }]
+   ['junit', { outputFile: 'results/junit-results.xml' }],
+   ['html']
 ],
 
   /* Run your local dev server before starting the tests */
