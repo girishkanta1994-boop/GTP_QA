@@ -1,55 +1,10 @@
-<testsuites id="" name="" tests="13" failures="1" skipped="0" errors="0" time="126.17839599999999">
-<testsuite name="GTP-LoginFlow\gtplogin.spec.ts" timestamp="2025-01-07T16:10:48.981Z" hostname="chromium" tests="13" failures="1" skipped="0" time="181.231" errors="0">
-<testcase name="gtpLoginTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="12.397">
-</testcase>
-<testcase name="loginflowNegativeTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="9.69">
-</testcase>
-<testcase name="gtpProjectMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="11.61">
-</testcase>
-<testcase name="gtpTestsMenutest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="12.757">
-</testcase>
-<testcase name="gtpTestPlanMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="10.616">
-</testcase>
-<testcase name="gtpExecutionMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="13.245">
-</testcase>
-<testcase name="gtpResultsMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="30.1">
-<failure message="gtplogin.spec.ts:81:5 gtpResultsMenuTest" type="FAILURE">
-<![CDATA[  [chromium] › GTP-LoginFlow\gtplogin.spec.ts:81:5 › gtpResultsMenuTest ────────────────────────────
-
-    Test timeout of 30000ms exceeded.
-
-    Error: expect(locator).toBeVisible()
-
-    Locator: getByRole('heading', { name: 'All Test Results' })
-    Expected: visible
-    Received: <element(s) not found>
-    Call log:
-      - expect.toBeVisible with timeout 60000ms
-      - waiting for getByRole('heading', { name: 'All Test Results' })
-
-
-      87 |   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-      88 |   await page.getByRole('menuitem', { name: ' Results' }).click({ timeout: 60000 });
-    > 89 |   await expect(page.getByRole('heading', { name: 'All Test Results' })).toBeVisible({ timeout: 60000 });
-         |                                                                         ^
-      90 |   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
-      91 |   await page.locator('a').filter({ hasText: 'Logout' }).click();
-      92 | });
-        at C:\Users\SahanadeviV\OneDrive - Royal Cyber Inc\Desktop\GTP-QA-GIT\GTP-QA\tests\GTP-LoginFlow\gtplogin.spec.ts:89:73
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="16.417303999999998">
+<testsuite name="gtpRegression\gtpProjectCreation.spec.ts" timestamp="2025-08-07T13:09:49.031Z" hostname="chromium" tests="1" failures="0" skipped="0" time="15.203" errors="0">
+<testcase name="gtpProjectCreationTest" classname="gtpRegression\gtpProjectCreation.spec.ts" time="15.203">
+<system-out>
+<![CDATA[Project Title: DemoProject1 
 ]]>
-</failure>
-</testcase>
-<testcase name="gtpDashboardMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="12.715">
-</testcase>
-<testcase name="gtpUsersMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="14.612">
-</testcase>
-<testcase name="gtpAIAssistantMenuTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="14.029">
-</testcase>
-<testcase name="gtpProjectSettingsTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="15.763">
-</testcase>
-<testcase name="gtpPageElementsTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="12.219">
-</testcase>
-<testcase name="gtpConfigurationTest" classname="GTP-LoginFlow\gtplogin.spec.ts" time="11.478">
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

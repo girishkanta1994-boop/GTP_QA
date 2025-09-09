@@ -97,13 +97,29 @@ const config = JSON.parse(fs.readFileSync('./config/config.json', 'utf-8'));
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  timeout:60000,
+
+
+  /*reporter: [
+    ['allure-playwright'],
+    ['html', { open: 'never' }],
+    ['list'] // optional console output
+  ],
   use: {
+    trace: 'on',                     // always save trace
+    screenshot: 'only-on-failure',   // take screenshot on test failure
+    video: 'retain-on-failure',      // save video on failure
+    headless: true,
+  },
+
+
+ /* use: {
     baseURL: config.url, // Load URL from JSON
     extraHTTPHeaders: {
       // Example: If using basic auth
       'Authorization': `Basic ${Buffer.from(`${config.username}:${config.password}`).toString('base64')}`,
     },
-  },
+  },*/
 
   //grep: /regression/,
  
@@ -112,7 +128,7 @@ export default defineConfig({
 
   testDir: './tests',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  //fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -120,7 +136,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-reporter: 'html',
+reporter: [['list'],['html'],['allure-playwright']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     // Base URL for the tests
@@ -173,10 +189,10 @@ reporter: 'html',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
- reporter: [
+ /*reporter: [
    ['list'], // Optional: Console output
    ['junit', { outputFile: 'results/junit-results.xml' }]
-],
+],*/
 
   /* Run your local dev server before starting the tests */
   // webServer: {
