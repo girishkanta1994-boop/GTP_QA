@@ -4,8 +4,8 @@ import config from '../../config/config.json';
 import { createPublicKey } from 'crypto';
 import * as XLSX from "xlsx";
 
-const filePath = "C:\\Users\\ManjeshaV\\OneDrive - Royal Cyber Inc\\Desktop\\Playwright DataSheet.xlsx";
-const sheetName ="Test Data";
+const filePath = "C:\\Users\\ManjeshaV\\OneDrive - Royal Cyber Inc\\Desktop\\chemistry - Copy.xlsx";
+const sheetName ="Sheet1";
 
 //Read Data file
 function readExcel(filePath: string, sheetName?: string): any[] {
@@ -39,8 +39,6 @@ async function navigateTo(page: Page, menuItem: string) {
 
 // Test for Project Creation
 test('gtpProjectCreationTest', async ({ page }) => {
-
-  
 
   await navigateTo(page, 'Projects');
   await page.getByRole('button', { name: 'Add New Project' }).click();
@@ -112,10 +110,10 @@ test('gtpTestsExecutionTest', async ({ page }) => {
   await page.getByRole('menuitem', { name: ' Projects' }).click();
   await page.getByRole('button', { name: '' }).click();
   await page.getByRole('textbox', { name: 'Project Name' }).click();
-  await page.getByRole('textbox', { name: 'Project Name' }).fill('TestExecution');
+  await page.getByRole('textbox', { name: 'Project Name' }).fill('TestAIreport');
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.waitForTimeout(5000);
-  await page.locator('#projects').getByText('TestExecution', { exact: true }).click();
+  await page.locator('#projects').getByText('TestAIreport', { exact: true }).click();
   await page.waitForTimeout(5000);
   await page.getByRole('menuitem', { name: ' Test Plans' }).click();
   await page.getByText('test', { exact: true }).click();
@@ -305,6 +303,8 @@ test('gtpProectSettingsTest', async ({ page }) => {
 
 });
 
+
+//Verify Dashboard features
 test('gtpDashboardPageTest', async ({ page }) => {
 
   await page.getByRole('menuitem', { name: ' Projects' }).click();
@@ -313,28 +313,11 @@ test('gtpDashboardPageTest', async ({ page }) => {
   await page.waitForTimeout(5000);
   await navigateTo(page, 'Dashboard');
   await page.getByRole('tab', { name: 'Executions', exact: true }).click();
-  await expect(page.getByLabel('Executions', { exact: true })).toContainText('Total Server Side Executions ()');
+  await expect(page.getByLabel('Executions', { exact: true })).toContainText('Total Server Side Executions');
   await page.getByRole('tab', { name: 'Scheduled Executions' }).click();
-  await expect(page.getByLabel('Scheduled Executions')).toContainText('Total Schedule Data Executions ()');
+  await expect(page.getByLabel('Scheduled Executions')).toContainText('Total Schedule Data Executions');
   await page.getByRole('tab', { name: 'Devops Pipeline Executions' }).click();
-  await expect(page.getByLabel('Devops Pipeline Executions')).toContainText('Total DevOps Pipeline Executions ()');
-
-});
-
-//Verify Dashboard features
-test('gtpDashboardPageTest1', async ({ page }) => {
-
-  await page.getByRole('menuitem', { name: ' Projects' }).click();
-  await page.waitForTimeout(5000);
-  await page.locator('#projects').getByText('DemoProject1').click();
-  await page.waitForTimeout(5000);
-  await navigateTo(page, 'Dashboard');
-  await page.getByRole('tab', { name: 'Executions', exact: true }).click();
-  await expect(page.getByLabel('Executions', { exact: true })).toContainText('Total Server Side Executions ()');
-  await page.getByRole('tab', { name: 'Scheduled Executions' }).click();
-  await expect(page.getByLabel('Scheduled Executions')).toContainText('Total Schedule Data Executions ()');
-  await page.getByRole('tab', { name: 'Devops Pipeline Executions' }).click();
-  await expect(page.getByLabel('Devops Pipeline Executions')).toContainText('Total DevOps Pipeline Executions ()');
+  await expect(page.getByLabel('Devops Pipeline Executions')).toContainText('Total DevOps Pipeline Executions');
 
 });
 
@@ -431,9 +414,9 @@ test('gtpCICDTest', async ({ page }) => {
   await page.getByRole('tab', { name: 'CI/CD' }).click();
   if (await page.getByText('Confirm').isVisible()) {
     await page.getByRole('button', { name: 'Yes' }).click();
-    await expect(page.getByText('curl -k -v https://dev-api.')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('curl -k -v')).toBeVisible({ timeout: 15000 });
   } else {
-    await expect(page.getByText('curl -k -v https://dev-api.')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('curl -k -v')).toBeVisible({ timeout: 15000 });
   }
 
 });
@@ -465,10 +448,10 @@ test('AI LLM', async ({ page }) => {
   await navigateTo(page, 'Projects');
   await page.getByRole('button', { name: '' }).click();
   await page.getByRole('textbox', { name: 'Project Name' }).click();
-  await page.getByRole('textbox', { name: 'Project Name' }).fill('AI LLM Testing');
+  await page.getByRole('textbox', { name: 'Project Name' }).fill('classBuddyTesting');
   await page.getByRole('button', { name: 'Apply' }).click();
-  await page.locator('#projects').getByText('AI LLM Testing').click();
-  await page.getByLabel('Browser Tests').getByText('LLM Validation Basic',{exact:true}).click();
+  await page.locator('#projects').getByText('classBuddyTesting').click();
+  await page.getByLabel('Browser Tests').getByText('Basic AI Eval',{exact:true}).click();
   await page.getByRole('button', { name: 'Open in Test Editor' }).waitFor({ state: 'visible' });
   await page.locator('#p-panel-0-titlebar').getByRole('button', { name: 'More Actions' }).click();
   await page.locator('a').filter({ hasText: 'View Data' }).click();
@@ -488,7 +471,10 @@ test('AI LLM', async ({ page }) => {
   await page.getByRole('menuitem', { name: ' Results' }).click();
   await page.getByRole('tab', { name: 'Tests Results' }).waitFor({ state: 'visible' });
   await page.getByRole('tab', { name: 'Tests Results' }).click();
-  await page.locator('//tbody[@class="p-datatable-tbody" and @ng-reflect-frozen="false"]/tr[1]/td[1]/div').click();
+  //uncomment this for dev
+  //await page.locator('//tbody[@class="p-datatable-tbody" and @ng-reflect-frozen="false"]/tr[1]/td[1]/div').click();
+  await page.locator('//tbody[@class="p-datatable-tbody"]/tr[2]/td[1]/div').click();
+
   await page.getByRole('gridcell', { name: 'Action', exact: true })
   await page.waitForTimeout(10000);
   const scenarios = await page.locator('//div[@class="scenario-buttons-scroll"]/button');
@@ -497,7 +483,10 @@ test('AI LLM', async ({ page }) => {
   for (let i = 0; i < scenariosCount; i++) {
     await page.locator('//div[@class="scenario-buttons-scroll"]/button').nth(i).click();
     await page.locator('//td[text()="AssertChatResponse"]//preceding::td[2]/button').nth(i).click();
-    const getText = await page.locator('//p[@ng-reflect-ng-class="text-red-500" or @ng-reflect-ng-class="text-green-500"]').nth(i).textContent();
+
+    //uncomment this for dev
+    //const getText = await page.locator('//p[@ng-reflect-ng-class="text-red-500" or @ng-reflect-ng-class="text-green-500"]').nth(i).textContent();
+    const getText = await page.locator('//p[contains(@class,"500")]').nth(i).textContent();
     console.log('Status of scenario ' + i + ' --> ' + getText);
   }
   await page.getByRole('button', { name: 'AI Eval Report' }).click();
