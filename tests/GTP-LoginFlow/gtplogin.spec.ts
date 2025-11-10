@@ -73,11 +73,13 @@ test('gtpExecutionMenuTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Executions' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Execute' })).toBeVisible({ timeout: 60000 });
+  await page.getByRole('menuitem', { name: ' Test Pipelines' }).click();
+  //await page.getByRole('menuitem', { name: ' Executions' }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: 'Executions' })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
+
 test('gtpResultsMenuTest', async ({ page }) => {
   await page.goto(config.url);
 
@@ -86,7 +88,7 @@ test('gtpResultsMenuTest', async ({ page }) => {
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
   await page.getByRole('menuitem', { name: ' Results' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'All Test Results' })).toBeVisible({ timeout: 60000 });
+  await expect(page.getByRole('tab', { name: 'Tests Results' })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });

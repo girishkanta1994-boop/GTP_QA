@@ -4,7 +4,7 @@ import config from '../../config/config.json';
 import { createPublicKey } from 'crypto';
 import * as XLSX from "xlsx";
 
-const filePath = "C:\\Users\\ManjeshaV\\OneDrive - Royal Cyber Inc\\Desktop\\chemistry - Copy.xlsx";
+const filePath = "C:\\Users\\ManjeshaV\\OneDrive - Royal Cyber Inc\\Desktop\\classBuddyAI.xlsx";
 const sheetName ="Sheet1";
 
 //Read Data file
@@ -74,7 +74,8 @@ test('gtpTestsCreationTest', async ({ page }) => {
   await page.waitForTimeout(2000);
   await page.getByLabel('Options list').getByText('smoke_ver_01').click();
   await page.getByPlaceholder('Description').fill('To Verify Checkout Functionality');
-  await page.getByRole('button', { name: 'Create Test' }).click();
+  await page.waitForTimeout(2000);
+  await page.getByRole('button', { name: 'Create Test', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'verify_checkout' })).toBeVisible();
 
 });
@@ -110,12 +111,13 @@ test('gtpTestsExecutionTest', async ({ page }) => {
   await page.getByRole('menuitem', { name: ' Projects' }).click();
   await page.getByRole('button', { name: '' }).click();
   await page.getByRole('textbox', { name: 'Project Name' }).click();
-  await page.getByRole('textbox', { name: 'Project Name' }).fill('TestAIreport');
+  await page.getByRole('textbox', { name: 'Project Name' }).fill('DemoTest');
   await page.getByRole('button', { name: 'Apply' }).click();
   await page.waitForTimeout(5000);
-  await page.locator('#projects').getByText('TestAIreport', { exact: true }).click();
+  await page.locator('#projects').getByText('DemoTest', { exact: true }).click();
   await page.waitForTimeout(5000);
   await page.getByRole('menuitem', { name: ' Test Plans' }).click();
+  await page.waitForTimeout(2000);
   await page.getByText('test', { exact: true }).click();
   await page.getByRole('button', { name: 'Execute' }).click();
   await expect(page.getByLabel('Inprogress (1)').locator('p-table'))
@@ -448,10 +450,10 @@ test('AI LLM', async ({ page }) => {
   await navigateTo(page, 'Projects');
   await page.getByRole('button', { name: '' }).click();
   await page.getByRole('textbox', { name: 'Project Name' }).click();
-  await page.getByRole('textbox', { name: 'Project Name' }).fill('classBuddyTesting');
+  await page.getByRole('textbox', { name: 'Project Name' }).fill('AI_ClassBuddyTesting');
   await page.getByRole('button', { name: 'Apply' }).click();
-  await page.locator('#projects').getByText('classBuddyTesting').click();
-  await page.getByLabel('Browser Tests').getByText('Basic AI Eval',{exact:true}).click();
+  await page.locator('#projects').getByText('AI_ClassBuddyTesting').click();
+  await page.getByLabel('Browser Tests').getByText('Classbuddy AI Test',{exact:true}).click();
   await page.getByRole('button', { name: 'Open in Test Editor' }).waitFor({ state: 'visible' });
   await page.locator('#p-panel-0-titlebar').getByRole('button', { name: 'More Actions' }).click();
   await page.locator('a').filter({ hasText: 'View Data' }).click();
