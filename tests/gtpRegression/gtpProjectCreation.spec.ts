@@ -3,8 +3,9 @@ import { Page } from '@playwright/test';
 import config from '../../config/config.json';
 import { createPublicKey } from 'crypto';
 import * as XLSX from "xlsx";
+import * as path from 'path';
 
-const filePath = "C:\\Users\\ManjeshaV\\OneDrive - Royal Cyber Inc\\Desktop\\classBuddyAI.xlsx";
+const filePath = path.resolve(__dirname, './classBuddyAI.xlsx');
 const sheetName ="Sheet1";
 
 //Read Data file
