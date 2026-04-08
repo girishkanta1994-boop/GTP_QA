@@ -1,0 +1,131 @@
+name: Playwright Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test selection (folder/file/grep)"
+        required: false
+        default: "tests"
+      workers:
+        description: "Parallel workers"
+        required: false
+        default: "4"
+  schedule:
+    - cron: "30 2 * * 1-5"
+
+jobs:
+  run-playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CI: true
+      PW_WORKERS: ${{ github.event.inputs.workers || '4' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Generate config from secrets
+        shell: bash
+        run: |
+          mkdir -p config
+          cat > config/config.json <<'EOF'
+          {
+            "url": "${{ secrets.GTP_URL || 'https://prod.gotestpro.com/' }}",
+            "username": "${{ secrets.GTP_USERNAME || 'demotestmanager@rc.com' }}",
+            "password": "${{ secrets.GTP_PASSWORD || 'admin' }}",
+            "projectTitle": "${{ secrets.GTP_PROJECT || 'Amazon' }}"
+          }
+          EOF
+
+      - name: Run Playwright tests in parallel
+        shell: bash
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'tests' }}"
+          npx playwright test "$SUITE" --project=chromium --workers="${PW_WORKERS}"
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload raw test outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            test-results/
+            allure-results/
+          retention-days: 14
+
+      - name: Notify Teams (optional)
+        if: always() && secrets.TEAMS_WEBHOOK_URL != ''
+        shell: bash
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ job.status }}"
+          COLOR="E81123"
+          if [ "$STATUS" = "success" ]; then
+            COLOR="2EB886"
+          fi
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          REPO="${{ github.repository }}"
+          BRANCH="${{ github.ref_name }}"
+          payload=$(cat <<EOF
+          {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "${COLOR}",
+            "summary": "Playwright run ${STATUS}",
+            "title": "Playwright run: ${STATUS}",
+            "sections": [
+              {
+                "facts": [
+                  { "name": "Repository", "value": "${REPO}" },
+                  { "name": "Branch", "value": "${BRANCH}" },
+                  { "name": "Workers", "value": "${PW_WORKERS}" }
+                ],
+                "text": "Open run: ${RUN_URL}"
+              }
+            ]
+          }
+          EOF
+          )
+          curl -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL"
+
+      - name: Email summary (optional)
+        if: always() && secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.EMAIL_TO != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          secure: false
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Playwright run ${{ job.status }} - ${{ github.repository }}"
+          to: ${{ secrets.EMAIL_TO }}
+          from: ${{ secrets.EMAIL_FROM || secrets.SMTP_USERNAME }}
+          body: |
+            Playwright run status: ${{ job.status }}
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Artifacts include Playwright HTML report and test-results.
