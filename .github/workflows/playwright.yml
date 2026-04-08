@@ -21,6 +21,17 @@ jobs:
     env:
       CI: true
       PW_WORKERS: ${{ github.event.inputs.workers || '4' }}
+      GTP_URL: ${{ secrets.GTP_URL }}
+      GTP_USERNAME: ${{ secrets.GTP_USERNAME }}
+      GTP_PASSWORD: ${{ secrets.GTP_PASSWORD }}
+      GTP_PROJECT: ${{ secrets.GTP_PROJECT }}
+      TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      EMAIL_TO: ${{ secrets.EMAIL_TO }}
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
 
     steps:
       - name: Checkout
@@ -42,12 +53,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p config
-          cat > config/config.json <<'EOF'
+          cat > config/config.json <<EOF
           {
-            "url": "${{ secrets.GTP_URL || 'https://prod.gotestpro.com/' }}",
-            "username": "${{ secrets.GTP_USERNAME || 'demotestmanager@rc.com' }}",
-            "password": "${{ secrets.GTP_PASSWORD || 'admin' }}",
-            "projectTitle": "${{ secrets.GTP_PROJECT || 'Amazon' }}"
+            "url": "${GTP_URL:-https://prod.gotestpro.com/}",
+            "username": "${GTP_USERNAME:-demotestmanager@rc.com}",
+            "password": "${GTP_PASSWORD:-admin}",
+            "projectTitle": "${GTP_PROJECT:-Amazon}"
           }
           EOF
 
@@ -76,10 +87,8 @@ jobs:
           retention-days: 14
 
       - name: Notify Teams (optional)
-        if: ${{ always() && secrets.TEAMS_WEBHOOK_URL != '' }}
+        if: ${{ always() && env.TEAMS_WEBHOOK_URL != '' }}
         shell: bash
-        env:
-          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
         run: |
           STATUS="${{ job.status }}"
           COLOR="E81123"
@@ -112,17 +121,17 @@ jobs:
           curl -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL"
 
       - name: Email summary (optional)
-        if: ${{ always() && secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.EMAIL_TO != '' }}
+        if: ${{ always() && env.SMTP_SERVER != '' && env.SMTP_USERNAME != '' && env.SMTP_PASSWORD != '' && env.EMAIL_TO != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT || 587 }}
+          server_address: ${{ env.SMTP_SERVER }}
+          server_port: ${{ env.SMTP_PORT || 587 }}
           secure: false
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
+          username: ${{ env.SMTP_USERNAME }}
+          password: ${{ env.SMTP_PASSWORD }}
           subject: "Playwright run ${{ job.status }} - ${{ github.repository }}"
-          to: ${{ secrets.EMAIL_TO }}
-          from: ${{ secrets.EMAIL_FROM || secrets.SMTP_USERNAME }}
+          to: ${{ env.EMAIL_TO }}
+          from: ${{ env.EMAIL_FROM || env.SMTP_USERNAME }}
           body: |
             Playwright run status: ${{ job.status }}
             Repository: ${{ github.repository }}
