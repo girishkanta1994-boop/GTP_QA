@@ -58,7 +58,7 @@ jobs:
           npx playwright test "$SUITE" --project=chromium --workers="${PW_WORKERS}"
 
       - name: Upload Playwright HTML report
-        if: always()
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -66,7 +66,7 @@ jobs:
           retention-days: 14
 
       - name: Upload raw test outputs
-        if: always()
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results
@@ -76,7 +76,7 @@ jobs:
           retention-days: 14
 
       - name: Notify Teams (optional)
-        if: always() && secrets.TEAMS_WEBHOOK_URL != ''
+        if: ${{ always() && secrets.TEAMS_WEBHOOK_URL != '' }}
         shell: bash
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
@@ -112,7 +112,7 @@ jobs:
           curl -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL"
 
       - name: Email summary (optional)
-        if: always() && secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.EMAIL_TO != ''
+        if: ${{ always() && secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.EMAIL_TO != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
