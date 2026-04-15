@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "Playwright path(s). Default: small smoke (2 tests). Use 'tests' for full suite."
+        description: "Playwright path(s). Default: full suite under tests/. Use a file path for a subset."
         required: false
-        default: "tests/GTP-ReusableFlows/gtpreusableflows.spec.ts"
+        default: "tests"
       workers:
         description: "Parallel workers"
         required: false
@@ -70,7 +70,7 @@ jobs:
           elif [ -n "$SUITE_INPUT" ]; then
             SUITE="$SUITE_INPUT"
           else
-            SUITE="tests/GTP-ReusableFlows/gtpreusableflows.spec.ts"
+            SUITE="tests"
           fi
           echo "Running suite: $SUITE"
           npx playwright test $SUITE --project=chromium --workers="${PW_WORKERS}"
