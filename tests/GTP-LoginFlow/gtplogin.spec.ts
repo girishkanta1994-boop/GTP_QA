@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import config from '../../config/config.json'; // Adjust the relative path
 
+const reusableFlowName = 'Login';
+
 test('gtpLoginTest', async ({ page }) => {
   await page.goto(config.url);
 
@@ -165,7 +167,6 @@ test('gtpConfigurationTest', async ({ page }) => {
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
-
 
 test('gtpReusableFlowLoginDetailsTest', async ({ page }) => {
   await page.goto(config.url);
