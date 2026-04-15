@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "Test selection (folder/file/grep)"
+        description: "Playwright path(s). Default: small smoke (2 tests). Use 'tests' for full suite."
         required: false
-        default: "tests"
+        default: "tests/GTP-ReusableFlows/gtpreusableflows.spec.ts"
       workers:
         description: "Parallel workers"
         required: false
@@ -21,10 +21,6 @@ jobs:
     env:
       CI: true
       PW_WORKERS: ${{ github.event.inputs.workers || '4' }}
-      GTP_URL: ${{ secrets.GTP_URL }}
-      GTP_USERNAME: ${{ secrets.GTP_USERNAME }}
-      GTP_PASSWORD: ${{ secrets.GTP_PASSWORD }}
-      GTP_PROJECT: ${{ secrets.GTP_PROJECT }}
       TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
       SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
       SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -53,23 +49,34 @@ jobs:
         shell: bash
         run: |
           mkdir -p config
-          cat > config/config.json <<EOF
+          cat > config/config.json <<'EOF'
           {
-            "url": "${GTP_URL:-https://prod.gotestpro.com/}",
-            "username": "${GTP_USERNAME:-demotestmanager@rc.com}",
-            "password": "${GTP_PASSWORD:-admin}",
-            "projectTitle": "${GTP_PROJECT:-Amazon}"
+            "url": "${{ secrets.GTP_URL || 'https://prod.gotestpro.com/' }}",
+            "username": "${{ secrets.GTP_USERNAME || 'demotestmanager@rc.com' }}",
+            "password": "${{ secrets.GTP_PASSWORD || 'admin' }}",
+            "projectTitle": "${{ secrets.GTP_PROJECT || 'Amazon' }}"
           }
           EOF
 
       - name: Run Playwright tests in parallel
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SUITE_INPUT: ${{ github.event.inputs.suite || '' }}
         run: |
-          SUITE="${{ github.event.inputs.suite || 'tests' }}"
-          npx playwright test "$SUITE" --project=chromium --workers="${PW_WORKERS}"
+          # Scheduled = full regression; manual = UI default or chosen suite
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            SUITE="tests"
+          elif [ -n "$SUITE_INPUT" ]; then
+            SUITE="$SUITE_INPUT"
+          else
+            SUITE="tests/GTP-ReusableFlows/gtpreusableflows.spec.ts"
+          fi
+          echo "Running suite: $SUITE"
+          npx playwright test $SUITE --project=chromium --workers="${PW_WORKERS}"
 
       - name: Upload Playwright HTML report
-        if: ${{ always() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -77,7 +84,7 @@ jobs:
           retention-days: 14
 
       - name: Upload raw test outputs
-        if: ${{ always() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
@@ -118,7 +125,14 @@ jobs:
           }
           EOF
           )
-          curl -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL"
+          echo "Calling Teams webhook..."
+          HTTP_STATUS=$(curl -sS -o teams_webhook_response.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$TEAMS_WEBHOOK_URL" || true)
+          echo "Teams webhook HTTP status: $HTTP_STATUS"
+          echo "Teams webhook response body:"
+          cat teams_webhook_response.txt || true
 
       - name: Email summary (optional)
         if: ${{ always() && env.SMTP_SERVER != '' && env.SMTP_USERNAME != '' && env.SMTP_PASSWORD != '' && env.EMAIL_TO != '' }}
