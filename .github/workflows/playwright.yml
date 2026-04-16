@@ -11,6 +11,10 @@ on:
         description: "Parallel workers"
         required: false
         default: "4"
+      grep:
+        description: "Optional Playwright --grep (regex). Example for 3 tests: gtpLoginTest|loginflowNegativeTest|gtpProjectMenuTest. Leave empty to run all tests in suite."
+        required: false
+        default: ""
   schedule:
     - cron: "30 2 * * 1-5"
 
@@ -63,6 +67,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           SUITE_INPUT: ${{ github.event.inputs.suite || '' }}
+          GREP_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.grep || '' }}
         run: |
           # Scheduled = full regression; manual = UI default or chosen suite
           if [ "$EVENT_NAME" = "schedule" ]; then
@@ -73,7 +78,12 @@ jobs:
             SUITE="tests"
           fi
           echo "Running suite: $SUITE"
-          npx playwright test $SUITE --project=chromium --workers="${PW_WORKERS}"
+          if [ -n "$GREP_INPUT" ]; then
+            echo "grep: $GREP_INPUT"
+            npx playwright test $SUITE --project=chromium --workers="${PW_WORKERS}" --grep "$GREP_INPUT"
+          else
+            npx playwright test $SUITE --project=chromium --workers="${PW_WORKERS}"
+          fi
 
       - name: Upload Playwright HTML report
         if: always()
