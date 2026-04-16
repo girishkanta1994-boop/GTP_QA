@@ -64,7 +64,7 @@ Use Power Automate (example: team **GoTestPro Playwright Test Automation**, chan
 2. **Condition:** dynamic field **Message** or **Message plain text** **contains** `Girish_PW_TA` (change this string in the flow if you change the keyword).
 3. **If yes** → add **HTTP** action:
    - **Method:** `POST`
-   - **URI:** `https://api.github.com/repos/royal-cyber-inc/GTP-QA/actions/workflows/playwright.yml/dispatches`
+   - **URI:** `https://api.github.com/repos/girishkanta1994-boop/GTP_QA/actions/workflows/playwright.yml/dispatches`
    - **Headers:**
      - `Accept`: `application/vnd.github+json`
      - `X-GitHub-Api-Version`: `2022-11-28`

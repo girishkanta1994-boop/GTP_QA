@@ -21,7 +21,7 @@ This repository contains automated test scripts for GoTestPro, a comprehensive t
 ## Setup
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/girishkanta1994-boop/GTP_QA.git
 ```
 
 2. Install dependencies:
