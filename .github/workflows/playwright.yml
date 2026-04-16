@@ -51,10 +51,10 @@ jobs:
           mkdir -p config
           cat > config/config.json <<'EOF'
           {
-            "url": "${{ secrets.GTP_URL || 'https://prod.gotestpro.com/' }}",
-            "username": "${{ secrets.GTP_USERNAME || 'demotestmanager@rc.com' }}",
+            "url": "${{ secrets.GTP_URL || 'https://dev.gotestpro.com/' }}",
+            "username": "${{ secrets.GTP_USERNAME || 'manjesha.v@royalcyber.com' }}",
             "password": "${{ secrets.GTP_PASSWORD || 'admin' }}",
-            "projectTitle": "${{ secrets.GTP_PROJECT || 'Amazon' }}"
+            "projectTitle": "${{ secrets.GTP_PROJECT || 'DemoProject1' }}"
           }
           EOF
 
