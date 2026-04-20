@@ -50,9 +50,23 @@ async function navigateTo(page: Page, menuLabel: string | RegExp) {
   await page.getByRole('menuitem', { name: pattern }).click({ timeout: 60000 });
 }
 
+/** CI retries / partial runs can leave the project behind; duplicate title keeps wizard Save disabled. */
+async function deleteProjectByTitleIfExists(page: Page, title: string) {
+  await navigateTo(page, 'Projects');
+  await page.waitForTimeout(1500);
+  const row = page.getByRole('row', { name: title });
+  if ((await row.count()) === 0) {
+    return;
+  }
+  await row.first().getByRole('img').nth(2).click();
+  await page.getByRole('button', { name: 'Yes' }).click();
+  await page.waitForTimeout(3000);
+}
+
 // Test for Project Creation
 test('gtpProjectCreationTest', async ({ page }) => {
 
+  await deleteProjectByTitleIfExists(page, config.projectTitle);
   await navigateTo(page, 'Projects');
   await page.getByRole('button', { name: 'Add New Project' }).click();
   await page.getByPlaceholder('Project Title').fill(config.projectTitle);
@@ -66,9 +80,11 @@ test('gtpProjectCreationTest', async ({ page }) => {
   await page.getByLabel('Production').click();
   await page.getByPlaceholder('https://gotestpro.com').fill('https://saucedemo.com');
   await page.getByLabel('Add Environment').getByRole('button', { name: 'Save' }).click();
-  const parent = page.locator('xpath=/html/body/app-root/div/div[2]/app-projects/div/p-card/div/div/div/div/div[6]/button/span');
-  await parent.waitFor({ state: 'visible' });
-  await parent.click();
+  await page.waitForTimeout(1000);
+  const wizardSave = page.locator('app-projects').getByRole('button', { name: /^Save$/i }).last();
+  await expect(wizardSave).toBeVisible({ timeout: 30000 });
+  await expect(wizardSave).toBeEnabled({ timeout: 90000 });
+  await wizardSave.click();
   await page.waitForTimeout(5000);
   await expect(page.locator('app-header')).toContainText(config.projectTitle);
 

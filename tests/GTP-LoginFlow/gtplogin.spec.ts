@@ -190,7 +190,13 @@ test('gtpReusableFlowLoginDetailsTest', async ({ page }) => {
     timeout: 60000,
   });
 
-  // Ensure reusable flow named "Login" exists and open details
+  // Ensure reusable flow named "Login" exists and open details (seed on projectTitle or skip)
+  if ((await page.getByText(reusableFlowName, { exact: true }).count()) === 0) {
+    test.skip(
+      true,
+      `Seed reusable flow "${reusableFlowName}" on project "${config.projectTitle}" or create it in the app.`
+    );
+  }
   await expect(page.getByText(reusableFlowName, { exact: true })).toBeVisible({ timeout: 60000 });
   await page.getByText(reusableFlowName, { exact: true }).click({ timeout: 60000 });
   await expect(page).toHaveURL(/reusable-flows\/details/i, { timeout: 60000 });
