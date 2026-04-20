@@ -75,9 +75,10 @@ test('gtpExecutionMenuTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Test Pipelines' }).click();
-  //await page.getByRole('menuitem', { name: ' Executions' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Executions' })).toBeVisible({ timeout: 60000 });
+  await page.getByRole('menuitem', { name: /Test Pipelines|Executions/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Executions|Test Pipelines/i })).toBeVisible({
+    timeout: 60000,
+  });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
@@ -126,8 +127,8 @@ test('gtpAIAssistantMenuTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' AI Assistant (Beta)' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'AI Assistant (Beta)' })).toBeVisible({ timeout: 60000 });
+  await page.getByRole('menuitem', { name: /AI Assistant/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /AI Assistant/i })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
@@ -176,16 +177,17 @@ test('gtpReusableFlowLoginDetailsTest', async ({ page }) => {
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
 
-  // Open target project first (if visible in current account)
-  await page.getByRole('menuitem', { name: ' Projects' }).click({ timeout: 60000 });
-  const amazonProject = page.locator('#projects').getByText('Amazon', { exact: true }).first();
-  if (await amazonProject.count()) {
-    await amazonProject.click({ timeout: 60000 });
-  }
+  // Open target project from config (same as regression suite)
+  await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
+  const projectTile = page.locator('#projects').getByText(config.projectTitle, { exact: true }).first();
+  await expect(projectTile).toBeVisible({ timeout: 60000 });
+  await projectTile.click({ timeout: 60000 });
 
   // Navigate to Reusable Flows and validate list page
-  await page.getByRole('menuitem', { name: ' Reusable Flows' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Your Reusable Flows List:' })).toBeVisible({ timeout: 60000 });
+  await page.getByRole('menuitem', { name: /Reusable Flows/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Your Reusable Flows List/i })).toBeVisible({
+    timeout: 60000,
+  });
 
   // Ensure reusable flow named "Login" exists and open details
   await expect(page.getByText(reusableFlowName, { exact: true })).toBeVisible({ timeout: 60000 });

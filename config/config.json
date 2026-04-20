@@ -2,5 +2,7 @@
   "url": "https://dev.gotestpro.com",
   "username": "manjesha.v@royalcyber.com",
   "password": "admin",
-  "projectTitle": "DemoProject1"
+  "projectTitle": "DemoProject1",
+  "executionProjectName": "DemoTest",
+  "aiRegressionProjectName": "AI_ClassBuddyTesting"
 }

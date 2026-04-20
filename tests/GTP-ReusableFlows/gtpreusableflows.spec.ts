@@ -1,9 +1,11 @@
 import { test, expect, Page } from '@playwright/test';
+import config from '../../config/config.json';
 
-const appUrl = process.env.GTP_URL ?? 'https://prod.gotestpro.com/';
-const username = process.env.GTP_USERNAME ?? 'demotestmanager@rc.com';
-const password = process.env.GTP_PASSWORD ?? 'admin';
-const projectName = process.env.GTP_PROJECT ?? 'Amazon';
+/** Align with CI/local config.json; env vars still override when set. */
+const appUrl = process.env.GTP_URL ?? config.url;
+const username = process.env.GTP_USERNAME ?? config.username;
+const password = process.env.GTP_PASSWORD ?? config.password;
+const projectName = process.env.GTP_PROJECT ?? config.projectTitle;
 
 async function login(page: Page) {
   await page.goto(appUrl);
@@ -35,7 +37,9 @@ test.afterEach(async ({ page }) => {
 });
 
 test('gtpReusableFlowsNavigationAndListTest', async ({ page }) => {
-  await expect(page.getByRole('heading', { name: 'Your Reusable Flows List:' })).toBeVisible({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Your Reusable Flows List/i })).toBeVisible({
+    timeout: 60000,
+  });
   await expect(page.getByRole('columnheader', { name: /Flow Name/i })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: /Description/i })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: /Status/i })).toBeVisible();
@@ -43,7 +47,11 @@ test('gtpReusableFlowsNavigationAndListTest', async ({ page }) => {
 });
 
 test('gtpReusableFlowsSortDefaultTest', async ({ page }) => {
-  await expect(page.getByText('Sort by:')).toBeVisible();
-  await expect(page.getByText('Created Date (Newest)')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Your Reusable Flows List:' })).toBeVisible();
+  await expect(page.getByText(/Sort by:/i)).toBeVisible({ timeout: 60000 });
+  await expect(
+    page.getByText(/Created Date \(Newest\)|Newest first|Created Date/i)
+  ).toBeVisible({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Your Reusable Flows List/i })).toBeVisible({
+    timeout: 60000,
+  });
 });

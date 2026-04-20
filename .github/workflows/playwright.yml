@@ -18,6 +18,11 @@ on:
   schedule:
     - cron: "30 2 * * 1-5"
 
+# Avoid stacking many concurrent runs when workflow_dispatch fires repeatedly (e.g. Teams → Power Automate loop).
+concurrency:
+  group: playwright-regression-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-playwright:
     runs-on: ubuntu-latest
