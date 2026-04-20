@@ -133,8 +133,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* No retries — each test runs once (set to a positive number to retry failures). */
   retries: 0,
-  /* Keep CI stable; allow local override with PW_WORKERS. */
-  workers: process.env.CI ? 1 : Number(process.env.PW_WORKERS ?? 3),
+  /* Default 1 worker: shared GTP tenant + parallel spec files cause flaky races. Override: PW_WORKERS=4 npx playwright test */
+  workers: Number(process.env.PW_WORKERS ?? 1),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
 reporter: [['list'],['html'],['allure-playwright']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

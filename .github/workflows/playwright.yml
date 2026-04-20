@@ -8,9 +8,9 @@ on:
         required: false
         default: "tests"
       workers:
-        description: "Parallel workers"
+        description: "Parallel workers (default 1 avoids shared GTP data races across spec files)"
         required: false
-        default: "4"
+        default: "1"
       grep:
         description: "Optional Playwright --grep (regex). Example for 3 tests: gtpLoginTest|loginflowNegativeTest|gtpProjectMenuTest. Leave empty to run all tests in suite."
         required: false
@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 90
     env:
       CI: true
-      PW_WORKERS: ${{ github.event.inputs.workers || '4' }}
+      PW_WORKERS: ${{ github.event.inputs.workers || '1' }}
       TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
       SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
       SMTP_PORT: ${{ secrets.SMTP_PORT }}
