@@ -18,10 +18,25 @@ async function login(page: Page) {
 async function switchToProject(page: Page, targetProject: string) {
   await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
   await page.locator('#projects').getByText(targetProject, { exact: true }).first().click({ timeout: 60000 });
+  // If the project picker stays open, the next sidebar click can hit the wrong route (e.g. #/tests/listing).
+  if (await page.locator('#projects').isVisible()) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(page.locator('#projects')).toBeHidden({ timeout: 20000 });
 }
 
+/** Sidebar scope avoids clicking through overlays; heading + URL confirm navigation. */
 async function openReusableFlows(page: Page) {
-  await page.getByRole('menuitem', { name: /Reusable Flows/i }).click({ timeout: 60000 });
+  const sidebar = page.locator('app-sidebar');
+  const item =
+    (await sidebar.count()) > 0
+      ? sidebar.getByRole('menuitem', { name: /Reusable Flows/i })
+      : page.getByRole('menuitem', { name: /Reusable Flows/i });
+  await item.scrollIntoViewIfNeeded();
+  await item.click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Your Reusable Flows List|Reusable Flows/i })).toBeVisible({
+    timeout: 60000,
+  });
   await expect(page).toHaveURL(/reusable-flows/i, { timeout: 60000 });
 }
 

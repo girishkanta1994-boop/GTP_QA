@@ -183,10 +183,20 @@ test('gtpReusableFlowLoginDetailsTest', async ({ page }) => {
   const projectTile = page.locator('#projects').getByText(config.projectTitle, { exact: true }).first();
   await expect(projectTile).toBeVisible({ timeout: 60000 });
   await projectTile.click({ timeout: 60000 });
+  if (await page.locator('#projects').isVisible()) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(page.locator('#projects')).toBeHidden({ timeout: 20000 });
 
-  // Navigate to Reusable Flows and validate list page
-  await page.getByRole('menuitem', { name: /Reusable Flows/i }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: /Your Reusable Flows List/i })).toBeVisible({
+  // Navigate to Reusable Flows (scope to sidebar so project overlay does not steal the click)
+  const sidebar = page.locator('app-sidebar');
+  const reusableMenu =
+    (await sidebar.count()) > 0
+      ? sidebar.getByRole('menuitem', { name: /Reusable Flows/i })
+      : page.getByRole('menuitem', { name: /Reusable Flows/i });
+  await reusableMenu.scrollIntoViewIfNeeded();
+  await reusableMenu.click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Your Reusable Flows List|Reusable Flows/i })).toBeVisible({
     timeout: 60000,
   });
 

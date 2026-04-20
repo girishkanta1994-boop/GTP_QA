@@ -199,9 +199,10 @@ test('gtpPageElementTest', async ({ page }) => {
   await locatorValueInput.click();
   await locatorValueInput.fill('#addtocart');
   await page.getByRole('button', { name: 'Save Locator' }).click();
-  const locatorHeading = page
-    .locator(`//td[contains(text(), "${plocatorName}")]`)
-    .first();
+  await expect(
+    page.locator('tbody').getByText(plocatorName, { exact: true })
+  ).toBeVisible({ timeout: 60000 });
+  const locatorHeading = page.locator(`//td[contains(text(), "${plocatorName}")]`).first();
   await expect(locatorHeading).toBeVisible({ timeout: 10000 });
   const headingText1 = await locatorHeading.textContent();
   console.log('Locator Heading Text:', headingText1);
