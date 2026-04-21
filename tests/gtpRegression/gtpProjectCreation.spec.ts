@@ -183,9 +183,13 @@ test('gtpPageElementTest', async ({ page }) => {
   await pageNameInput.fill(pageName);
   console.log('Page Name:', pageName);
   await page.getByRole('button', { name: 'Submit' }).click();
-  await page.waitForTimeout(5000);
-  const heading = page.locator('#p-panel-1-titlebar').getByText(pageName);
-  const headingText = await heading.textContent();
+  // Panel index varies (p-panel-0 vs p-panel-1); scope by titlebar that contains this page name.
+  const panelTitlebar = page
+    .locator('[id$="-titlebar"]')
+    .filter({ has: page.getByText(pageName, { exact: true }) })
+    .first();
+  await expect(panelTitlebar).toBeVisible({ timeout: 60000 });
+  const headingText = await panelTitlebar.textContent();
   console.log('Heading Text:', headingText);
   expect(headingText?.trim()).toContain(pageName);
   await page.getByRole('button', { name: 'Add Locator' }).click();
@@ -207,10 +211,7 @@ test('gtpPageElementTest', async ({ page }) => {
   const headingText1 = await locatorHeading.textContent();
   console.log('Locator Heading Text:', headingText1);
   expect(headingText1?.trim()).toContain(plocatorName);
-  const deleteButton = page
-    .locator('#p-panel-1-titlebar')
-    .getByRole('button')
-    .nth(1);
+  const deleteButton = panelTitlebar.getByRole('button').nth(1);
   await expect(deleteButton).toBeVisible();
   await deleteButton.click();
   const confirmYesButton = page.getByRole('button', { name: 'Yes' });

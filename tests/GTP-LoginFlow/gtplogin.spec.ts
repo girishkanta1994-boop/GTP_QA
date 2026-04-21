@@ -64,7 +64,10 @@ test('gtpTestsMenutest', async ({ page }) => {
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
   await selectWorkspaceProject(page);
   await page.getByRole('menuitem', { name: /Tests/i }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: /Tests List|^Tests$/i })).toBeVisible({ timeout: 60000 });
+  // Exact title only — regex "Tests List" also matches inside "Your Tests List:" (strict violation).
+  await expect(page.getByRole('heading', { name: 'Tests List', exact: true })).toBeVisible({
+    timeout: 60000,
+  });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
 
   await page.locator('a').filter({ hasText: 'Logout' }).click();
