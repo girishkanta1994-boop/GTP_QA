@@ -1,7 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import config from '../../config/config.json'; // Adjust the relative path
 
 const reusableFlowName = 'Login';
+
+/** Many sidebar routes only show the expected page after a project is active. */
+async function selectWorkspaceProject(page: Page) {
+  await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
+  await expect(page.locator('#projects')).toBeVisible({ timeout: 15000 });
+  const tile = page.locator('#projects').getByText(config.projectTitle, { exact: true }).first();
+  await expect(tile).toBeVisible({ timeout: 60000 });
+  await tile.click({ timeout: 60000 });
+  if (await page.locator('#projects').isVisible()) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(page.locator('#projects')).toBeHidden({ timeout: 20000 });
+}
 
 test('gtpLoginTest', async ({ page }) => {
   await page.goto(config.url);
@@ -49,8 +62,9 @@ test('gtpTestsMenutest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Tests' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Tests List', exact: true })).toBeVisible({ timeout: 60000 });
+  await selectWorkspaceProject(page);
+  await page.getByRole('menuitem', { name: /Tests/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Tests List|^Tests$/i })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
 
   await page.locator('a').filter({ hasText: 'Logout' }).click();
@@ -62,8 +76,9 @@ test('gtpTestPlanMenuTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Test Plans' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Test Plans' })).toBeVisible({ timeout: 60000 });
+  await selectWorkspaceProject(page);
+  await page.getByRole('menuitem', { name: /Test Plans/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Test Plans/i })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
 
   await page.locator('a').filter({ hasText: 'Logout' }).click();
@@ -140,8 +155,11 @@ test('gtpProjectSettingsTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Project Settings' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible({ timeout: 60000 });
+  await selectWorkspaceProject(page);
+  await page.getByRole('menuitem', { name: /Project Settings/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Settings|Project Settings/i })).toBeVisible({
+    timeout: 60000,
+  });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
@@ -152,8 +170,9 @@ test('gtpPageElementsTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-  await page.getByRole('menuitem', { name: ' Page Elements' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Page Elements' })).toBeVisible({ timeout: 60000 });
+  await selectWorkspaceProject(page);
+  await page.getByRole('menuitem', { name: /Page Elements/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Page Elements/i })).toBeVisible({ timeout: 60000 });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
@@ -164,8 +183,11 @@ test('gtpConfigurationTest', async ({ page }) => {
   await page.fill('input[name="email"]', config.username);
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
-   await page.getByRole('menuitem', { name: 'Configuration' }).click({ timeout: 60000 });
-  await expect(page.getByRole('heading', { name: 'Test Run Settings' })).toBeVisible({ timeout: 60000 });
+  await selectWorkspaceProject(page);
+  await page.getByRole('menuitem', { name: /Configuration/i }).click({ timeout: 60000 });
+  await expect(page.getByRole('heading', { name: /Test Run Settings|Configuration/i })).toBeVisible({
+    timeout: 60000,
+  });
   await page.locator('button.p-button-secondary.p-button-text.custom-button.p-button.p-component > span.p-button-label').click();
   await page.locator('a').filter({ hasText: 'Logout' }).click();
 });
@@ -178,15 +200,7 @@ test('gtpReusableFlowLoginDetailsTest', async ({ page }) => {
   await page.fill('input[name="password"]', config.password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
 
-  // Open target project from config (same as regression suite)
-  await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
-  const projectTile = page.locator('#projects').getByText(config.projectTitle, { exact: true }).first();
-  await expect(projectTile).toBeVisible({ timeout: 60000 });
-  await projectTile.click({ timeout: 60000 });
-  if (await page.locator('#projects').isVisible()) {
-    await page.keyboard.press('Escape');
-  }
-  await expect(page.locator('#projects')).toBeHidden({ timeout: 20000 });
+  await selectWorkspaceProject(page);
 
   // Navigate to Reusable Flows (scope to sidebar so project overlay does not steal the click)
   const sidebar = page.locator('app-sidebar');

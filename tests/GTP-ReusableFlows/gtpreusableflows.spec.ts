@@ -17,7 +17,10 @@ async function login(page: Page) {
 
 async function switchToProject(page: Page, targetProject: string) {
   await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
-  await page.locator('#projects').getByText(targetProject, { exact: true }).first().click({ timeout: 60000 });
+  await expect(page.locator('#projects')).toBeVisible({ timeout: 15000 });
+  const tile = page.locator('#projects').getByText(targetProject, { exact: true }).first();
+  await expect(tile).toBeVisible({ timeout: 60000 });
+  await tile.click({ timeout: 60000 });
   // If the project picker stays open, the next sidebar click can hit the wrong route (e.g. #/tests/listing).
   if (await page.locator('#projects').isVisible()) {
     await page.keyboard.press('Escape');
