@@ -136,7 +136,12 @@ export default defineConfig({
   /* Default 1 worker: shared GTP tenant + parallel spec files cause flaky races. Override: PW_WORKERS=4 npx playwright test */
   workers: Number(process.env.PW_WORKERS ?? 1),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-reporter: [['list'],['html'],['allure-playwright']],
+reporter: [
+    ['list'],
+    ['html', { open: 'never' }],
+    ['allure-playwright'],
+    ['junit', { outputFile: 'results/junit-results.xml' }],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     // Base URL for the tests

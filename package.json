@@ -8,6 +8,7 @@
     "test:parallel": "playwright test --project=chromium --workers=4",
     "test:reusable-flow": "playwright test tests/GTP-LoginFlow/gtplogin.spec.ts -g gtpReusableFlowLoginDetailsTest --project=chromium",
     "capture:openai:xpath": "node scripts/openai-xpath-capture.js",
+    "report:teams": "node scripts/build-teams-report.js",
     "report:html": "playwright show-report",
     "report:allure:generate": "allure generate allure-results --clean -o allure-report",
     "report:allure:open": "allure open allure-report"

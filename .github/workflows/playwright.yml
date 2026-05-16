@@ -108,46 +108,42 @@ jobs:
             allure-results/
           retention-days: 14
 
+      - name: Build Teams report payload
+        if: ${{ always() && env.TEAMS_WEBHOOK_URL != '' }}
+        shell: bash
+        env:
+          JUNIT_PATH: results/junit-results.xml
+          GTP_PROJECT: ${{ secrets.GTP_PROJECT || 'DemoProject1' }}
+          REPORT_BROWSER: Chromium
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          JOB_STATUS: ${{ job.status }}
+          TEAMS_PAYLOAD_PATH: results/teams-payload.json
+        run: |
+          mkdir -p results
+          if [ ! -f "$JUNIT_PATH" ]; then
+            echo "JUnit not found at $JUNIT_PATH — creating minimal report."
+            echo '<testsuites tests="0" failures="1"><testsuite name="playwright" tests="0" failures="1" time="0"></testsuite></testsuites>' > "$JUNIT_PATH"
+          fi
+          node scripts/build-teams-report.js
+
       - name: Notify Teams (optional)
         if: ${{ always() && env.TEAMS_WEBHOOK_URL != '' }}
         shell: bash
         run: |
-          STATUS="${{ job.status }}"
-          COLOR="E81123"
-          if [ "$STATUS" = "success" ]; then
-            COLOR="2EB886"
-          fi
-          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          REPO="${{ github.repository }}"
-          BRANCH="${{ github.ref_name }}"
-          payload=$(cat <<EOF
-          {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "${COLOR}",
-            "summary": "Playwright run ${STATUS}",
-            "title": "Playwright run: ${STATUS}",
-            "sections": [
-              {
-                "facts": [
-                  { "name": "Repository", "value": "${REPO}" },
-                  { "name": "Branch", "value": "${BRANCH}" },
-                  { "name": "Workers", "value": "${PW_WORKERS}" }
-                ],
-                "text": "Open run: ${RUN_URL}"
-              }
-            ]
-          }
-          EOF
-          )
-          echo "Calling Teams webhook..."
+          echo "Posting Teams report..."
           HTTP_STATUS=$(curl -sS -o teams_webhook_response.txt -w "%{http_code}" \
             -H "Content-Type: application/json" \
-            -d "$payload" \
+            -d @results/teams-payload.json \
             "$TEAMS_WEBHOOK_URL" || true)
           echo "Teams webhook HTTP status: $HTTP_STATUS"
           echo "Teams webhook response body:"
           cat teams_webhook_response.txt || true
+          if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "202" ]; then
+            echo "Teams webhook returned non-success status. If card does not render, use a Power Automate incoming webhook (Adaptive Card)."
+            exit 0
+          fi
 
       - name: Email summary (optional)
         if: ${{ always() && env.SMTP_SERVER != '' && env.SMTP_USERNAME != '' && env.SMTP_PASSWORD != '' && env.EMAIL_TO != '' }}

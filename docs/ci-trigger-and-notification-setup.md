@@ -26,7 +26,23 @@ Create a Teams Incoming Webhook URL and store it as:
 
 - `TEAMS_WEBHOOK_URL`
 
-If set, each run posts status and run link to Teams.
+If set, each run posts a **rich execution summary** to Teams (similar to GoTestPro results):
+
+- Pass/fail banner and pass rate
+- Project, browser, executed time, total duration
+- Summary table (scripts/scenarios passed/failed/skipped)
+- Per-script blocks with scenario status table
+- Link to GitHub Actions run
+
+**Webhook type:** use a **Power Automate** incoming webhook (recommended) so Adaptive Cards render fully.  
+Legacy Office 365 connector webhooks may not show tables; set env `TEAMS_CARD_FORMAT=messagecard` for a simpler fallback.
+
+Local preview:
+
+```bash
+npx playwright test tests/GTP-LoginFlow/gtplogin.spec.ts --project=chromium
+npm run report:teams
+```
 
 ## 3) Optional Email Notification
 
