@@ -1,5 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import config from '../../config/config.json';
+import { selectWorkspaceProject } from '../helpers/project';
 
 /** Align with CI/local config.json; env vars still override when set. */
 const appUrl = process.env.GTP_URL ?? config.url;
@@ -13,19 +14,6 @@ async function login(page: Page) {
   await page.fill('input[name="password"]', password);
   await page.getByRole('button', { name: 'Sign In', exact: true }).click({ timeout: 60000 });
   await expect(page.getByRole('menuitem', { name: /Projects/i })).toBeVisible({ timeout: 60000 });
-}
-
-async function switchToProject(page: Page, targetProject: string) {
-  await page.getByRole('menuitem', { name: /Projects/i }).click({ timeout: 60000 });
-  await expect(page.locator('#projects')).toBeVisible({ timeout: 15000 });
-  const tile = page.locator('#projects').getByText(targetProject, { exact: true }).first();
-  await expect(tile).toBeVisible({ timeout: 60000 });
-  await tile.click({ timeout: 60000 });
-  // If the project picker stays open, the next sidebar click can hit the wrong route (e.g. #/tests/listing).
-  if (await page.locator('#projects').isVisible()) {
-    await page.keyboard.press('Escape');
-  }
-  await expect(page.locator('#projects')).toBeHidden({ timeout: 20000 });
 }
 
 /** Sidebar scope avoids clicking through overlays; heading + URL confirm navigation. */
@@ -45,7 +33,7 @@ async function openReusableFlows(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await login(page);
-  await switchToProject(page, projectName);
+  await selectWorkspaceProject(page, projectName);
   await openReusableFlows(page);
 });
 
